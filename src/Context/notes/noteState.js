@@ -36,17 +36,11 @@ const NoteState = (props) => {
             },
             body: JSON.stringify({ title, description, tag })
         });
+        const json = await response.json();
+        console.log(json)
 
         console.log("Adding a new note")
-        const note = {
-            "_id": "64bff2232307e2e0de1b1785b7b",
-            "user": "64bec3655475ae669040dbe3",
-            "title": title,
-            "description": description,
-            "tag": tag,
-            "date": "2023-07-25T16:02:40.034Z",
-            "__v": 0
-        }
+        const note = json;
         setNotes(notes.concat(note))
     }
 
@@ -72,7 +66,7 @@ const NoteState = (props) => {
     const editNote = async (id, title, description, tag) => {
 
         const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'content-type': 'application/json',
                 'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRiZWMzNjU1NDc1YWU2NjkwNDBkYmUzIn0sImlhdCI6MTY5MDI1MTc4OX0.3Pi44wQSSQIterheiY-L3fRpqEscbuxn4K8qlP8QPKY',
@@ -80,17 +74,21 @@ const NoteState = (props) => {
             },
             body: JSON.stringify({ title, description, tag })
         });
-        // const json = await response.json();
+        const json = await response.json();
+        console.log(json);
 
-        for (let index = 0; index < notes.length; index++) {
-            const element = notes[index];
+        let newNotes = JSON.parse(JSON.stringify(notes));
+        for (let index = 0; index < newNotes.length; index++) {
+            const element = newNotes[index];
             if (element._id === id) {
-                element.title = title;
-                element.description = description;
-                element.tag = tag;
+                newNotes[index].title = title;
+                newNotes[index].description = description;
+                newNotes[index].tag = tag;
+                break;
             }
-
+            
         }
+        setNotes(newNotes);
     }
 
     return (

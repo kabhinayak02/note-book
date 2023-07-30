@@ -5,23 +5,28 @@ import noteContext from '../Context/notes/noteContext';
 
 
 const Notes = () => {
+
     const context = useContext(noteContext);
-    const { notes, getNotes } = context; // destructring
+    const { notes, getNotes, editNote } = context; // destructring
     useEffect(() => {
         getNotes()
         // eslint-disable-next-line
     }, [])
-    const ref = useRef(null);
 
-    const [note, setNote] = useState({etitle:"", edescription:"", etag:""})
+    const ref = useRef(null);
+    const refClose = useRef(null);
+ 
+    const [note, setNote] = useState({id:"", etitle:"", edescription:"", etag:""});
 
     const updateNote = (currentNote) => {
         ref.current.click();
-        setNote({etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag});
+        setNote({id: currentNote._id ,etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag});
     }
     const handleClick = (e)=>{
-        console.log("updating the note...", note)
-        e.preventDefault();
+        console.log("updating the note...", note);
+        editNote(note.id, note.etitle, note.edescription, note.etag);
+        refClose.current.click();
+        
     }
 
     const onChange = (e)=>{
@@ -40,7 +45,7 @@ const Notes = () => {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">Edit Note</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -62,7 +67,7 @@ const Notes = () => {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button ref={refClose}  type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="button" className="btn btn-primary" onClick={handleClick}>Update Note</button>
                         </div>
                     </div>
@@ -71,6 +76,9 @@ const Notes = () => {
 
             <div className="row my-3">
                 <h2>You Notes</h2>
+                <div className="container">
+                    {notes.length === 0 && 'No note to Display'}
+                </div>
                 {notes.map((note) => {
                     return <NoteItem key={note._id} updateNote={updateNote} note={note} />
                 })}
